@@ -1,12 +1,12 @@
 name: Publish NuGet Tool
 
-   on:
-     push:
-       tags:
+on:
+   push:
+      tags:
          - 'v*'
 
-   jobs:
-     publish:
+jobs:
+   publish:
        runs-on: ubuntu-latest
 
        steps:
@@ -22,4 +22,4 @@ name: Publish NuGet Tool
            run: |
              dotnet restore
              dotnet pack -c Release
-             dotnet nuget push bin/Release/*.nupkg --source "https://nuget.pkg.github.com/kibnet/index.json" --api-key ${{secrets.PACKAGE_TOKEN}}
+             dotnet nuget push NugetCleaner/bin/Release/*.nupkg --source "https://nuget.pkg.github.com/kibnet/index.json" --api-key ${{secrets.PACKAGE_TOKEN}}
