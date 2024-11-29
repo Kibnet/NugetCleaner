@@ -31,8 +31,8 @@ namespace NugetCleaner
 
                     var versionDirs = Directory.GetDirectories(packageDir)
                         .Select(Path.GetFileName)
-                        .Where(s => SemanticVersion.TryParse(s, out var _))
-                        .Select(v => SemanticVersion.Parse(v))
+                        .Where(s => s != null && SemanticVersion.TryParse(s, out _))
+                        .Select(SemanticVersion.Parse!)
                         .OrderByDescending(v => v)
                         .ToList();
 

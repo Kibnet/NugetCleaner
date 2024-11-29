@@ -6,12 +6,24 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>clean-old-packages</ToolCommandName>
+    <ToolCommandName>clean-old-nuget</ToolCommandName>
+    <Authors>Kibnet</Authors>
+    <Description>Удаление старых версий пакетов из кеша кроме последней</Description>
+    <PackageProjectUrl>https://github.com/Kibnet/NugetCleaner</PackageProjectUrl>
+    <PackageIcon>logo128.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Kibnet/NugetCleaner</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="NuGet.Versioning" Version="6.12.1" />
     <PackageReference Include="NuGet.Configuration" Version="6.12.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="logo128.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
