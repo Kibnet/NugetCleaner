@@ -7,4 +7,5 @@
 Установить утилиту можно с помощью `dotnet`:
 
 ```bash
-dotnet tool install --global clean-old-nuget --add-source https://nuget.pkg.github.com/kibnet/index.json
+dotnet tool install --global CleanOldNuget
+dotnet tool install --global CleanOldNuget --add-source https://nuget.pkg.github.com/kibnet/index.json

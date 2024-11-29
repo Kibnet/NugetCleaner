@@ -22,4 +22,6 @@ jobs:
            run: |
              dotnet restore
              dotnet pack -c Release
-             dotnet nuget push NugetCleaner/bin/Release/*.nupkg --source "https://nuget.pkg.github.com/kibnet/index.json" --api-key ${{secrets.PACKAGE_TOKEN}}
+             dotnet nuget push NugetCleaner/bin/Release/*.nupkg --source "https://nuget.pkg.github.com/kibnet/index.json" --api-key ${{secrets.PACKAGE_TOKEN}} --skip-duplicate
+             dotnet nuget push NugetCleaner/bin/Release/*.nupkg --api-key ${{secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
