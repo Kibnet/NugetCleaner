@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using NuGet.Versioning;
+﻿using NuGet.Versioning;
+using NuGet.Configuration;
 
 namespace NugetCleaner
 {
@@ -9,67 +7,67 @@ namespace NugetCleaner
     {
         static void Main(string[] args)
         {
-            if (args.Length == 0)
+            var osNameAndVersion = System.Runtime.InteropServices.RuntimeInformation.OSDescription;
+            if (!osNameAndVersion.Contains("Windows"))
             {
-                Console.WriteLine("Укажите путь к каталогу в аргументах командной строки.");
+                Console.WriteLine("Этот скрипт работает только на Windows!");
                 return;
             }
 
-            foreach (string arg in args)
+            var settings = Settings.LoadDefaultSettings(".");
+            var rootDirectory = SettingsUtility.GetGlobalPackagesFolder(settings);
+
+            if (!Directory.Exists(rootDirectory))
             {
-                string rootDirectory = arg.Replace("\"", "");
+                Console.WriteLine($"Каталог {rootDirectory} не существует.");
+                return;
+            }
 
-                if (!Directory.Exists(rootDirectory))
+            try
+            {
+                foreach (string packageDir in Directory.GetDirectories(rootDirectory))
                 {
-                    Console.WriteLine($"Каталог {rootDirectory} не существует.");
-                    return;
-                }
+                    Console.WriteLine($"Обработка пакета: {Path.GetFileName(packageDir)}");
 
-                try
-                {
-                    foreach (string packageDir in Directory.GetDirectories(rootDirectory))
+                    var versionDirs = Directory.GetDirectories(packageDir)
+                        .Select(Path.GetFileName)
+                        .Where(s => SemanticVersion.TryParse(s, out var _))
+                        .Select(v => SemanticVersion.Parse(v))
+                        .OrderByDescending(v => v)
+                        .ToList();
+
+                    if (versionDirs.Count <= 1)
                     {
-                        Console.WriteLine($"Обработка пакета: {Path.GetFileName(packageDir)}");
-
-                        var versionDirs = Directory.GetDirectories(packageDir)
-                            .Select(Path.GetFileName)
-                            .Where(s => SemanticVersion.TryParse(s, out var _))
-                            .Select(v => SemanticVersion.Parse(v))
-                            .OrderByDescending(v => v)
-                            .ToList();
-
-                        if (versionDirs.Count <= 1)
-                        {
-                            Console.WriteLine("Нет старых версий для удаления.");
-                            continue;
-                        }
-
-                        var latestVersion = versionDirs.First();
-
-                        foreach (var version in versionDirs.Skip(1))
-                        {
-                            string versionPath = Path.Combine(packageDir, version.ToString());
-                            try
-                            {
-                                Directory.Delete(versionPath, true);
-                                Console.WriteLine($"Удалена версия: {version}");
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine($"Не удалось удалить версию {version}: {ex.Message}");
-                            }
-                        }
-
-                        Console.WriteLine($"Оставлена последняя версия: {latestVersion}");
+                        Console.WriteLine("Нет старых версий для удаления.");
+                        continue;
                     }
 
-                    Console.WriteLine("Очистка завершена.");
+                    var latestVersion = versionDirs.First();
+
+                    foreach (var version in versionDirs.Skip(1))
+                    {
+                        string versionPath = Path.Combine(packageDir, version.ToString());
+                        try
+                        {
+                            Directory.Delete(versionPath, true);
+                            Console.WriteLine($"Удалена версия: {version}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Не удалось удалить версию {version}: {ex.Message}");
+                        }
+                    }
+
+                    Console.WriteLine($"Оставлена последняя версия: {latestVersion}");
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Произошла ошибка: {ex.Message}");
-                }
+
+                Console.WriteLine("Очистка завершена.");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Произошла ошибка: {ex.Message}");
+            }
+
         }
     }
 }
