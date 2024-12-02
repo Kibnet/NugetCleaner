@@ -9,3 +9,11 @@
 ```bash
 dotnet tool install --global CleanOldNuget
 dotnet tool install --global CleanOldNuget --add-source https://nuget.pkg.github.com/kibnet/index.json
+```
+
+## Использование
+
+В командной строке вызывать:
+```bash
+clean-old-nuget
+```
